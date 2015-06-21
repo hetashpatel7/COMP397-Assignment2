@@ -8,8 +8,11 @@ var objects;
 (function (objects) {
     var Label = (function (_super) {
         __extends(Label, _super);
-        function Label(labelText, x, y, centered) {
-            _super.call(this, labelText, config.FONT_SMALL + " " + config.FONT_FAMILY, config.BLACK);
+        function Label(labelText, x, y, centered, color) {
+            if (color == "red")
+                _super.call(this, labelText, config.FONT_SMALL + " " + config.FONT_FAMILY, config.RED);
+            else
+                _super.call(this, labelText, config.FONT_SMALL + " " + config.FONT_FAMILY, config.BLACK);
             if (centered) {
                 this.regX = this.getMeasuredWidth() * 0.5;
                 this.regY = this.getMeasuredHeight() * 0.5;

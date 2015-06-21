@@ -67,6 +67,10 @@ var reset;
 var betone;
 var betten;
 var betmax;
+var bet;
+var credit;
+var result;
+var jackpotLabel;
 /* Tally Variables */
 var playerMoney = 1000;
 var winnings = 0;
@@ -87,6 +91,7 @@ var bells = 0;
 var sevens = 0;
 var blanks = 0;
 var determinewin = 0;
+var playerMoneyTemp = 1000;
 var spinResult;
 // Preloader Function
 function preload() {
@@ -188,6 +193,115 @@ function resetAll() {
     winNumber = 0;
     lossNumber = 0;
     winRatio = 0;
+    playerMoneyTemp = 1000;
+    stage.removeChild(result);
+}
+//display loss message+++++++++++
+function showLossMessage() {
+    // alert("Hard Luck! Try Again...");
+    stage.removeChild(result);
+    result = new objects.Label("Lost!! ", 247, 303, false, "red");
+    stage.addChild(result);
+    showPlayerStats();
+    resetFruitTally();
+}
+//display winning result in label+++++++++
+function showWinMessage() {
+    stage.removeChild(result);
+    playerMoney += winnings;
+    playerMoneyTemp = playerMoney;
+    result = new objects.Label("$ " + winnings, 247, 303, false, "red");
+    stage.addChild(result);
+    // alert("You Won: $" + winnings);
+    resetFruitTally();
+    showPlayerStats();
+    checkJackPot();
+}
+function resetFruitTally() {
+    grapes = 0;
+    bananas = 0;
+    oranges = 0;
+    cherries = 0;
+    bars = 0;
+    bells = 0;
+    sevens = 0;
+    blanks = 0;
+}
+//function to check jackpot value++++++++++++
+function checkJackPot() {
+    /* compare two random values */
+    var jackPotTry = Math.floor(Math.random() * 51 + 1);
+    var jackPotWin = Math.floor(Math.random() * 51 + 1);
+    if (jackPotTry == jackPotWin) {
+        jackpotLabel = new objects.Label("$ " + jackpot, 145, 96, false, "red");
+        alert("Hurray!!You Won the $" + jackpot + " Jackpot!!");
+        playerMoney += jackpot;
+        jackpot = 1000;
+    }
+}
+//function to determine win or loss+++++++++
+function determineWinnings() {
+    console.log("fuction called");
+    if (blanks == 0) {
+        console.log("fuction called win");
+        if (grapes == 3) {
+            winnings = playerBet * 10;
+        }
+        else if (bananas == 3) {
+            winnings = playerBet * 20;
+        }
+        else if (oranges == 3) {
+            winnings = playerBet * 30;
+        }
+        else if (cherries == 3) {
+            winnings = playerBet * 40;
+        }
+        else if (bars == 3) {
+            winnings = playerBet * 50;
+        }
+        else if (bells == 3) {
+            winnings = playerBet * 75;
+        }
+        else if (sevens == 3) {
+            winnings = playerBet * 100;
+        }
+        else if (grapes == 2) {
+            winnings = playerBet * 2;
+        }
+        else if (bananas == 2) {
+            winnings = playerBet * 2;
+        }
+        else if (oranges == 2) {
+            winnings = playerBet * 3;
+        }
+        else if (cherries == 2) {
+            winnings = playerBet * 4;
+        }
+        else if (bars == 2) {
+            winnings = playerBet * 5;
+        }
+        else if (bells == 2) {
+            winnings = playerBet * 10;
+        }
+        else if (sevens == 2) {
+            winnings = playerBet * 20;
+        }
+        else if (sevens == 1) {
+            winnings = playerBet * 5;
+        }
+        else {
+            winnings = playerBet * 1;
+        }
+        winNumber++;
+        // console.log("winnings +++" + winnings);
+        showWinMessage();
+    }
+    else {
+        lossNumber++;
+        //console.log("fuction called loss");
+        showLossMessage();
+    }
+    // playerMoneyTemp = playerMoneyTemp + winnings;
 }
 // Callback function that allows me to respond to button click events
 function spinButtonClicked(event) {
@@ -204,6 +318,7 @@ function spinButtonClicked(event) {
         alert("You have to bet some money to play...");
     else if (playerBet <= playerMoney) {
         playerMoney = playerMoney - playerBet;
+        playerMoneyTemp = playerMoney;
         spinResult = Reels();
         switch (spinResult[0]) {
             case "Banana":
@@ -355,124 +470,60 @@ function spinButtonClicked(event) {
                 stage.addChild(reel1);
                 break;
         }
+        determineWinnings();
+        showPlayerStats();
     }
 }
+//show player stats in textboxes++++++++++
+function showPlayerStats() {
+    stage.removeChild(bet);
+    stage.removeChild(credit);
+    bet = new objects.Label("" + playerBet, 145, 303, false, "black");
+    stage.addChild(bet);
+    credit = new objects.Label("" + playerMoneyTemp, 41, 303, false, "black");
+    stage.addChild(credit);
+}
+//reset all stats+++++++++++++++++
 function resetButtonClicked(event) {
     createjs.Sound.play("clicked");
     resetAll();
+    showPlayerStats();
 }
+//button to bet one dollar+++++++++++
 function betOneButtonClicked(event) {
     createjs.Sound.play("clicked");
-    if (playerMoney >= 1)
+    if (playerMoney >= 1) {
         playerBet = 1;
+        playerMoneyTemp = playerMoney - 1;
+    }
     else
         alert("You don't have enough money to place that bet");
+    showPlayerStats();
 }
+//button to bet maximum dollars you have+++++++++++
 function betMaxButtonClicked(event) {
     createjs.Sound.play("clicked");
-    if (playerMoney != 0)
+    if (playerMoney != 0) {
         playerBet = playerMoney;
+        playerMoneyTemp = 0;
+    }
     else {
         if (confirm("You ran out of Money! \nDo you want to play again?")) {
             resetAll();
         }
     }
+    showPlayerStats();
 }
+//button to bet ten dollars+++++++++++
 function betTenButtonClicked(event) {
     createjs.Sound.play("clicked");
-    playerBet = 10;
-    if (playerMoney >= 10)
+    if (playerMoney >= 10) {
         playerBet = 10;
+        playerMoneyTemp = playerMoney - 10;
+    }
     else
         alert("You don't have enough money to place that bet");
-}
-function showLossMessage() {
-    alert("Hard Luck! Try Again...");
-}
-function showWinMessage() {
-    playerMoney += winnings;
-    alert("You Won: $" + winnings);
-    resetFruitTally();
-    checkJackPot();
-}
-function resetFruitTally() {
-    grapes = 0;
-    bananas = 0;
-    oranges = 0;
-    cherries = 0;
-    bars = 0;
-    bells = 0;
-    sevens = 0;
-    blanks = 0;
-}
-function checkJackPot() {
-    /* compare two random values */
-    var jackPotTry = Math.floor(Math.random() * 51 + 1);
-    var jackPotWin = Math.floor(Math.random() * 51 + 1);
-    if (jackPotTry == jackPotWin) {
-        alert("You Won the $" + jackpot + " Jackpot!!");
-        playerMoney += jackpot;
-        jackpot = 1000;
-    }
-}
-function determineWinnings() {
-    if (blanks == 0) {
-        if (grapes == 3) {
-            winnings = playerBet * 10;
-        }
-        else if (bananas == 3) {
-            winnings = playerBet * 20;
-        }
-        else if (oranges == 3) {
-            winnings = playerBet * 30;
-        }
-        else if (cherries == 3) {
-            winnings = playerBet * 40;
-        }
-        else if (bars == 3) {
-            winnings = playerBet * 50;
-        }
-        else if (bells == 3) {
-            winnings = playerBet * 75;
-        }
-        else if (sevens == 3) {
-            winnings = playerBet * 100;
-        }
-        else if (grapes == 2) {
-            winnings = playerBet * 2;
-        }
-        else if (bananas == 2) {
-            winnings = playerBet * 2;
-        }
-        else if (oranges == 2) {
-            winnings = playerBet * 3;
-        }
-        else if (cherries == 2) {
-            winnings = playerBet * 4;
-        }
-        else if (bars == 2) {
-            winnings = playerBet * 5;
-        }
-        else if (bells == 2) {
-            winnings = playerBet * 10;
-        }
-        else if (sevens == 2) {
-            winnings = playerBet * 20;
-        }
-        else if (sevens == 1) {
-            winnings = playerBet * 5;
-        }
-        else {
-            winnings = playerBet * 1;
-        }
-        winNumber++;
-        showWinMessage();
-    }
-    else {
-        lossNumber++;
-        showLossMessage();
-    }
-    playerMoney = playerMoney + winnings;
+    showPlayerStats();
 }
 // Callback functions that change the alpha transparency of the button
 // Our Main Game Function
@@ -496,5 +547,6 @@ function main() {
     betmax = new objects.Button("betMaxButton", 196, 334, false);
     stage.addChild(betmax);
     betmax.on("click", betMaxButtonClicked, this);
+    showPlayerStats();
 }
 //# sourceMappingURL=game.js.map
