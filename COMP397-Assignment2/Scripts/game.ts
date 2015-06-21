@@ -30,8 +30,10 @@ var manifest = [
     { id: "orange", src: "assets/images/orangeSymbol.png" },
     { id: "blank", src: "assets/images/blankSymbol.png" },
     { id: "bar", src: "assets/images/barSymbol.png" },
-   
-    { id: "clicked", src: "assets/audio/door_close.wav" }
+    { id: "start", src: "assets/audio/game_face.wav" },
+    { id: "win", src: "assets/audio/jackpotwin.wav" },
+
+       { id: "clicked", src: "assets/audio/door_close.wav" }
 ];
 
 var atlas = {
@@ -233,7 +235,7 @@ function showLossMessage() {
   // alert("Hard Luck! Try Again...");
    stage.removeChild(result);
    
-    result = new objects.Label("Lost!! ", 247, 303, false,"red");
+    result = new objects.Label("Lost!! ", 243, 303, false,"red");
     stage.addChild(result);
     showPlayerStats();
     resetFruitTally();
@@ -249,9 +251,10 @@ function showWinMessage() {
     stage.addChild(result);
    // alert("You Won: $" + winnings);
     resetFruitTally();
-    showPlayerStats();
     checkJackPot();
 
+    showPlayerStats();
+   
 
 }
 
@@ -272,7 +275,9 @@ function checkJackPot() {
     var jackPotTry = Math.floor(Math.random() * 51 + 1);
     var jackPotWin = Math.floor(Math.random() * 51 + 1);
     if (jackPotTry == jackPotWin) {
-        jackpotLabel = new objects.Label("$ "+jackpot,145,96,false,"red");
+        createjs.Sound.play("win");
+        jackpotLabel = new objects.Label("$ " + jackpot, 145, 96, false, "red");
+        stage.addChild(jackpotLabel);
         alert("Hurray!!You Won the $" + jackpot + " Jackpot!!");
         playerMoney += jackpot;
         jackpot = 1000;
@@ -348,6 +353,7 @@ function determineWinnings() {
 
 // Callback function that allows me to respond to button click events
 function spinButtonClicked(event: createjs.MouseEvent) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
 
     if (playerMoney == 0) {
@@ -558,6 +564,7 @@ function resetButtonClicked(event: createjs.MouseEvent) {
 }
 //button to bet one dollar+++++++++++
 function betOneButtonClicked(event: createjs.MouseEvent) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
 
    
@@ -573,8 +580,10 @@ function betOneButtonClicked(event: createjs.MouseEvent) {
 }
 //button to bet maximum dollars you have+++++++++++
 function betMaxButtonClicked(event: createjs.MouseEvent) {
-    createjs.Sound.play("clicked");
+    createjs.Sound.stop();
 
+    createjs.Sound.play("clicked");
+   
     if (playerMoney != 0)
     {
         playerBet = playerMoney;
@@ -591,7 +600,7 @@ function betMaxButtonClicked(event: createjs.MouseEvent) {
 }
 //button to bet ten dollars+++++++++++
 function betTenButtonClicked(event: createjs.MouseEvent) {
-   
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
    
 
@@ -612,6 +621,8 @@ function betTenButtonClicked(event: createjs.MouseEvent) {
 
 // Our Main Game Function
 function main() {
+    createjs.Sound.play("start");
+    
     // add in slot machine graphic
     background = new createjs.Bitmap(assets.getResult("background"));
     stage.addChild(background);
@@ -637,5 +648,6 @@ function main() {
     stage.addChild(betmax);
     betmax.on("click", betMaxButtonClicked, this);
     showPlayerStats();
+    
     
 }

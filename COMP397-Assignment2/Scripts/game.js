@@ -24,6 +24,8 @@ var manifest = [
     { id: "orange", src: "assets/images/orangeSymbol.png" },
     { id: "blank", src: "assets/images/blankSymbol.png" },
     { id: "bar", src: "assets/images/barSymbol.png" },
+    { id: "start", src: "assets/audio/game_face.wav" },
+    { id: "win", src: "assets/audio/jackpotwin.wav" },
     { id: "clicked", src: "assets/audio/door_close.wav" }
 ];
 var atlas = {
@@ -200,7 +202,7 @@ function resetAll() {
 function showLossMessage() {
     // alert("Hard Luck! Try Again...");
     stage.removeChild(result);
-    result = new objects.Label("Lost!! ", 247, 303, false, "red");
+    result = new objects.Label("Lost!! ", 243, 303, false, "red");
     stage.addChild(result);
     showPlayerStats();
     resetFruitTally();
@@ -214,8 +216,8 @@ function showWinMessage() {
     stage.addChild(result);
     // alert("You Won: $" + winnings);
     resetFruitTally();
-    showPlayerStats();
     checkJackPot();
+    showPlayerStats();
 }
 function resetFruitTally() {
     grapes = 0;
@@ -233,7 +235,9 @@ function checkJackPot() {
     var jackPotTry = Math.floor(Math.random() * 51 + 1);
     var jackPotWin = Math.floor(Math.random() * 51 + 1);
     if (jackPotTry == jackPotWin) {
+        createjs.Sound.play("win");
         jackpotLabel = new objects.Label("$ " + jackpot, 145, 96, false, "red");
+        stage.addChild(jackpotLabel);
         alert("Hurray!!You Won the $" + jackpot + " Jackpot!!");
         playerMoney += jackpot;
         jackpot = 1000;
@@ -305,6 +309,7 @@ function determineWinnings() {
 }
 // Callback function that allows me to respond to button click events
 function spinButtonClicked(event) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
     if (playerMoney == 0) {
         if (confirm("You ran out of Money! \nDo you want to play again?")) {
@@ -491,6 +496,7 @@ function resetButtonClicked(event) {
 }
 //button to bet one dollar+++++++++++
 function betOneButtonClicked(event) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
     if (playerMoney >= 1) {
         playerBet = 1;
@@ -502,6 +508,7 @@ function betOneButtonClicked(event) {
 }
 //button to bet maximum dollars you have+++++++++++
 function betMaxButtonClicked(event) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
     if (playerMoney != 0) {
         playerBet = playerMoney;
@@ -516,6 +523,7 @@ function betMaxButtonClicked(event) {
 }
 //button to bet ten dollars+++++++++++
 function betTenButtonClicked(event) {
+    createjs.Sound.stop();
     createjs.Sound.play("clicked");
     if (playerMoney >= 10) {
         playerBet = 10;
@@ -528,6 +536,7 @@ function betTenButtonClicked(event) {
 // Callback functions that change the alpha transparency of the button
 // Our Main Game Function
 function main() {
+    createjs.Sound.play("start");
     // add in slot machine graphic
     background = new createjs.Bitmap(assets.getResult("background"));
     stage.addChild(background);
